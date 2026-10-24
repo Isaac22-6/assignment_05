@@ -36,8 +36,13 @@ def format_name(names: pd.Series) -> pd.Series:
     Strip each part, then join them back together in the other order with a
     space between. Same `.str` toolkit as `clean_employee_id`; no `apply`.
     """
-    # TODO: your code here
-    pass
+    split = names.str.split(",")
+    first_name = split.str[0]
+    last_name = split.str[1]
+    first_name = first_name.str.strip()
+    last_name = last_name.str.strip()
+    full_name = last_name + " " + first_name
+    return full_name
 
 
 def add_roster(history: pd.DataFrame, employees: pd.DataFrame) -> pd.DataFrame:
@@ -56,8 +61,20 @@ def add_roster(history: pd.DataFrame, employees: pd.DataFrame) -> pd.DataFrame:
     history on `employee_id`. The history must have been through
     `add_clean_columns` first — the raw `employeeid` does not match anything.
     """
-    # TODO: your code here
-    pass
+    out = employees.copy()
+    out["display_name"] = format_name(out["name"])
+    out = out[["employee_id", "display_name", "department"]]
+    history = add_clean_columns(history)
+    merge_df = pd.merge(
+        history,
+        out,
+        on="employee_id",
+        how="left",
+        suffixes=("_source", ""),
+    )
+    if "department_source" in merge_df.columns:
+        merge_df = merge_df.loc[:, merge_df.columns != "department_source"]
+    return merge_df
 
 
 def build_history(exports: list, employees: pd.DataFrame) -> pd.DataFrame:
@@ -68,8 +85,11 @@ def build_history(exports: list, employees: pd.DataFrame) -> pd.DataFrame:
     their work. The result has every raw column, every column the steps add, and
     one row per row of every export.
     """
-    # TODO: your code here
-    pass
+    exp_df = combine_exports(exports)
+    exp_df = add_clean_columns(exp_df)
+    exp_df = add_date_parts(exp_df)
+    merge_df = add_roster(exp_df, employees)
+    return merge_df
 
 
 def summarize_employees(history: pd.DataFrame) -> pd.DataFrame:
@@ -100,5 +120,16 @@ def summarize_employees(history: pd.DataFrame) -> pd.DataFrame:
     of a group-by by default. The app warns about them; this function does not
     need to.
     """
-    # TODO: your code here
-    pass
+    summary = (
+        history.groupby(["employee_id", "display_name", "department"])
+        .agg(
+            weeks_paid=("week_ending", "count"),
+            total_hours=("hours_worked", "sum"),
+            total_pay=("gross_pay", "sum"),
+            avg_hours=("hours_worked", "mean"),
+            overtime_weeks=("hours_worked", lambda x: (x > 40).sum()),
+        )
+        .round({"total_pay": 2, "avg_hours": 2})
+        .reset_index()
+    )
+    return summary
