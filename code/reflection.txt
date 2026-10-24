@@ -1,7 +1,3 @@
-Write your reflection here.
-
-See reflection.md for what makes a good reflection — be specific, use the
-terminology from this assignment (grain, long vs. wide, vectorized .str methods,
-coerce, NaT, pd.to_datetime format, .dt, concat, ignore_index, group by, named
-aggregation, reset_index, pivot_table, fill_value, melt, lineage), and make it
-actionable.
+I learned how to transform and agrregate dataframes to analyze row values within a column. In the reshape module, the pivot_table function was used to transform and agrregate
+the history table in the hour_grid function. This allowed me to analyze calculations such as the or mean among the values in the 'week_ending' 
+column.

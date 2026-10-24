@@ -78,9 +78,18 @@ def load_all_exports() -> list[pd.DataFrame]:
 # --- Generated history: the reason you cannot hardcode -------------------------------
 
 ROSTER_RATES = {
-    "E001": 18.50, "E002": 17.75, "E003": 19.00, "E004": 20.25,
-    "E005": 16.50, "E006": 18.00, "E007": 21.00, "E008": 16.50,
-    "E009": 18.50, "E010": 19.50, "E011": 17.00, "E012": 17.50,
+    "E001": 18.50,
+    "E002": 17.75,
+    "E003": 19.00,
+    "E004": 20.25,
+    "E005": 16.50,
+    "E006": 18.00,
+    "E007": 21.00,
+    "E008": 16.50,
+    "E009": 18.50,
+    "E010": 19.50,
+    "E011": 17.00,
+    "E012": 17.50,
 }
 
 
@@ -94,13 +103,15 @@ def gross_pay(hours: float, rate: float) -> float:
 def _old_style_id(rng: random.Random, employee_id: str) -> str:
     """The ways an ID got typed into the old spreadsheet."""
     number = int(employee_id[1:])
-    return rng.choice([
-        employee_id,                 # E004
-        f"e{number:03d}",            # e004
-        f" {employee_id}",           # " E004"
-        f"E{number}",                # E4
-        f"e{number} ",               # "e4 "
-    ])
+    return rng.choice(
+        [
+            employee_id,  # E004
+            f"e{number:03d}",  # e004
+            f" {employee_id}",  # " E004"
+            f"E{number}",  # E4
+            f"e{number} ",  # "e4 "
+        ]
+    )
 
 
 def _old_style_date(rng: random.Random, day: date) -> str:
@@ -124,21 +135,25 @@ def _week_rows(rng: random.Random, day: date, old_style: bool) -> list[dict]:
         rate = ROSTER_RATES[employee_id]
         total = gross_pay(hours, rate)
         if old_style:
-            rows.append({
-                "payrolldate": _old_style_date(rng, day),
-                "employeeid": _old_style_id(rng, employee_id),
-                "hours": rng.choice([f"{hours:.2f}", f" {hours}", f"{hours}"]),
-                "rate": _money(rate),
-                "total": _money(total),
-            })
+            rows.append(
+                {
+                    "payrolldate": _old_style_date(rng, day),
+                    "employeeid": _old_style_id(rng, employee_id),
+                    "hours": rng.choice([f"{hours:.2f}", f" {hours}", f"{hours}"]),
+                    "rate": _money(rate),
+                    "total": _money(total),
+                }
+            )
         else:
-            rows.append({
-                "payrolldate": day.isoformat(),
-                "employeeid": employee_id,
-                "hours": str(hours),
-                "rate": str(rate),
-                "total": str(total),
-            })
+            rows.append(
+                {
+                    "payrolldate": day.isoformat(),
+                    "employeeid": employee_id,
+                    "hours": str(hours),
+                    "rate": str(rate),
+                    "total": str(total),
+                }
+            )
     return rows
 
 
@@ -170,6 +185,6 @@ if __name__ == "__main__":
     print(load_employees())
     exports = load_all_exports()
     print(f"{len(exports)} exports in data/exports/")
-    print(exports[0].head())      # an old-spreadsheet week
-    print(exports[-1].head())     # an Assignment 04 week
+    print(exports[0].head())  # an old-spreadsheet week
+    print(exports[-1].head())  # an Assignment 04 week
     print(generate_history(42)[0])
