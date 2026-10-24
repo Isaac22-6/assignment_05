@@ -1,3 +1,5 @@
-I learned how to transform and agrregate dataframes to analyze row values within a column. In the reshape module, the pivot_table function was used to transform and agrregate
-the history table in the hour_grid function. This allowed me to analyze calculations such as the or mean among the values in the 'week_ending' 
-column.
+I learned how to transform and aggregate DataFrames to analyze row values within a column. In the reshape module, 
+the pivot_table function was used to transform and aggregate the history table inside the hour_grid function. 
+This allowed me to calculate summary statistics, such as the mean, across the values grouped by the week_ending column.
+I will practice pivot_table by writing a new function that groups the history table by week_ending and computes both the mean 
+and sum of hours, then compare the output against a manual groupby result to confirm they match.
